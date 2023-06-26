@@ -1,4 +1,4 @@
-function [newpupil] = blink_regressout(pupildata, fsample, blinksmp, saccsmp, plotme, addBackSlowDrift)
+function [newpupil,slowpupil] = blink_regressout(pupildata, fsample, blinksmp, saccsmp, plotme, addBackSlowDrift)
 % method by Knapen, de Gee et al. (2016)
 % http://journals.plos.org/plosone/article?id=10.1371/journal.pone.0155574 
 % estimate canonical responses to blinks and saccades, then take those out
@@ -174,12 +174,12 @@ designM = [ones(size(reg1))' reg1' reg2'];
 % estimate glm weights
 % [b, ~, resid] = regress(dat.bpfilt', designM);
 
-b = designM \ dat.bpfilt;
+b = designM \ dat.bpfilt.';
 prediction = designM * b;
-resid = dat.bpfilt - prediction;
+resid = dat.bpfilt.' - prediction;
 
 % use residuals
-dat.residualpupil = resid;
+dat.residualpupil = resid.';
 
 if plotme,
     subplot(614); plot(dat.time,prediction);
@@ -200,7 +200,8 @@ end
 if addBackSlowDrift,
     newpupil = dat.lowfreqresid + dat.residualpupil;
 else
-    newpupil = dat.residualpupil;
+    newpupil  = dat.residualpupil;
+    slowpupil = dat.lowfreqresid;
 end
 
 if plotme,

@@ -27,8 +27,13 @@ end
 % make data struct
 % important: match the right data chans to their corresponding labels...
 data                = [];
-data.label          = {'EyeH'; 'EyeV'; 'EyePupil'};
-data.trial          = {asc.dat(2:4, :)};  %% !!!!!!!!! %% only take gaze and pupil
+if size(asc.dat,1)<6 % if there's only one eye channel
+    data.label          = {'EyeH1'; 'EyeV1'; 'EyePupil1'};
+    data.trial          = {asc.dat(2:4, :)};  %% !!!!!!!!! %% only take gaze and pupil
+else
+    data.label          = {'EyeH1'; 'EyeV1'; 'EyePupil1'; 'EyeH2'; 'EyeV2'; 'EyePupil2';};
+    data.trial          = {asc.dat(2:7, :)};  %% !!!!!!!!! %% only take gaze and pupil
+end
 data.fsample        = asc.fsample;
 data.time           = {0:1/data.fsample:length(asc.dat(1,:))/data.fsample-1/data.fsample};
 data.sampleinfo     = [1 length(asc.dat(1,:))];
